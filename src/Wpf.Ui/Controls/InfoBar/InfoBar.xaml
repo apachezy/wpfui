@@ -38,7 +38,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:InfoBar}">
                     <Border BorderThickness="0" Background="{x:Null}" Margin="0" Padding="0">
-                        <Grid x:Name="InfoBarRoot" Margin="{TemplateBinding Margin}">
+                        <Grid x:Name="InfoBarRoot" Margin="{TemplateBinding Padding}">
                             <Border
                                 x:Name="ContentBorder"
                                 Padding="14,10"
