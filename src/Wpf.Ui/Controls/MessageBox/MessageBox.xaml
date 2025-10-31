@@ -12,6 +12,8 @@
 
     <Style TargetType="{x:Type controls:MessageBox}">
         <Setter Property="MaxWidth" Value="450" />
+        <Setter Property="MaxHeight" Value="900" />
+        <Setter Property="SizeToContent" Value="WidthAndHeight" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Background" Value="{DynamicResource MessageBoxBackground}" />
         <Setter Property="FontSize" Value="14" />

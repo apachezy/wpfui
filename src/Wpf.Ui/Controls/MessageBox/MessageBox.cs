@@ -265,7 +265,6 @@ public class MessageBox : System.Windows.Window
     /// </summary>
     public MessageBox()
     {
-        Topmost = true;
         SetValue(TemplateButtonCommandProperty, new RelayCommand<MessageBoxButton>(OnButtonClick));
 
         PreviewMouseDoubleClick += static (_, args) => args.Handled = true;
@@ -317,6 +316,20 @@ public class MessageBox : System.Windows.Window
         {
             RemoveTitleBarAndApplyMica();
 
+            if (Owner is null)
+            {
+                // Prefer active window (user's current context), fallback to main window
+                Window? owner = Application.Current?.Windows
+                    .OfType<Window>().FirstOrDefault(x => x.IsActive && x != this);
+
+                owner ??= Application.Current?.MainWindow;
+
+                if (owner is not null && owner != this)
+                {
+                    Owner = owner;
+                }
+            }
+
             if (showAsDialog)
             {
                 base.ShowDialog();
@@ -343,10 +356,6 @@ public class MessageBox : System.Windows.Window
     /// </summary>
     protected virtual void OnLoaded()
     {
-        var rootElement = (UIElement)GetVisualChild(0)!;
-
-        ResizeToContentSize(rootElement);
-
         switch (WindowStartupLocation)
         {
             case WindowStartupLocation.Manual:
@@ -384,24 +393,6 @@ public class MessageBox : System.Windows.Window
     private static extern bool CanCenterOverWPFOwnerAccessor(Window w);
 #endif
 
-    /// <summary>
-    /// Resizes the MessageBox to fit the content's size, including margins.
-    /// </summary>
-    /// <param name="rootElement">The root element of the MessageBox</param>
-    protected virtual void ResizeToContentSize(UIElement rootElement)
-    {
-        Size desiredSize = rootElement.DesiredSize;
-
-        // left and right margin
-        const double margin = 12.0 * 2;
-
-        SetCurrentValue(WidthProperty, desiredSize.Width + margin);
-        SetCurrentValue(HeightProperty, desiredSize.Height);
-
-        ResizeWidth(rootElement);
-        ResizeHeight(rootElement);
-    }
-
     protected override void OnClosing(CancelEventArgs e)
     {
         base.OnClosing(e);
@@ -412,6 +403,45 @@ public class MessageBox : System.Windows.Window
         }
 
         _ = Tcs?.TrySetResult(MessageBoxResult.None);
+    }
+
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+
+        InvalidateMeasure();
+        InvalidateArrange();
+        UpdateLayout();
+    }
+
+    protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+    {
+        base.OnRenderSizeChanged(sizeInfo);
+
+        if ((sizeInfo.WidthChanged || sizeInfo.HeightChanged) &&
+            WindowState == WindowState.Normal)
+        {
+            AdjustWindowPosition(sizeInfo);
+        }
+    }
+
+    protected virtual void AdjustWindowPosition(SizeChangedInfo sizeInfo)
+    {
+        double deltaX = 0;
+        double deltaY = 0;
+
+        if (sizeInfo.WidthChanged)
+        {
+            deltaX = (sizeInfo.PreviousSize.Width - sizeInfo.NewSize.Width) / 2;
+        }
+
+        if (sizeInfo.HeightChanged)
+        {
+            deltaY = (sizeInfo.PreviousSize.Height - sizeInfo.NewSize.Height) / 2;
+        }
+
+        Left += deltaX;
+        Top += deltaY;
     }
 
     protected virtual void CenterWindowOnScreen()
@@ -453,41 +483,5 @@ public class MessageBox : System.Windows.Window
     {
         _ = UnsafeNativeMethods.RemoveWindowTitlebarContents(this);
         _ = WindowBackdrop.ApplyBackdrop(this, WindowBackdropType.Mica);
-    }
-
-    private void ResizeWidth(UIElement element)
-    {
-        if (Width <= MaxWidth)
-        {
-            return;
-        }
-
-        SetCurrentValue(WidthProperty, MaxWidth);
-        element.UpdateLayout();
-
-        SetCurrentValue(HeightProperty, element.DesiredSize.Height);
-
-        if (Height > MaxHeight)
-        {
-            SetCurrentValue(MaxHeightProperty, Height);
-        }
-    }
-
-    private void ResizeHeight(UIElement element)
-    {
-        if (Height <= MaxHeight)
-        {
-            return;
-        }
-
-        SetCurrentValue(HeightProperty, MaxHeight);
-        element.UpdateLayout();
-
-        SetCurrentValue(WidthProperty, element.DesiredSize.Width);
-
-        if (Width > MaxWidth)
-        {
-            SetCurrentValue(MaxWidthProperty, Width);
-        }
     }
 }
