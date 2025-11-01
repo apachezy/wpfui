@@ -4,6 +4,7 @@
 // All Rights Reserved.
 
 using System.Reflection;
+using System.Windows.Threading;
 using Wpf.Ui.Input;
 using Wpf.Ui.Interop;
 using Size = System.Windows.Size;
@@ -260,6 +261,8 @@ public class MessageBox : System.Windows.Window
     )!;
 #endif
 
+    private bool _contentRendered;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageBox"/> class.
     /// </summary>
@@ -421,8 +424,22 @@ public class MessageBox : System.Windows.Window
         if ((sizeInfo.WidthChanged || sizeInfo.HeightChanged) &&
             WindowState == WindowState.Normal)
         {
-            AdjustWindowPosition(sizeInfo);
+            if (_contentRendered)
+            {
+                // _ = Dispatcher.BeginInvoke(
+                //     new Action<SizeChangedInfo>(AdjustWindowPosition),
+                //     DispatcherPriority.Normal,
+                //     sizeInfo
+                // );
+                AdjustWindowPosition(sizeInfo);
+            }
         }
+    }
+
+    protected override void OnContentRendered(EventArgs e)
+    {
+        base.OnContentRendered(e);
+        _contentRendered = true;
     }
 
     protected virtual void AdjustWindowPosition(SizeChangedInfo sizeInfo)
