@@ -30,7 +30,7 @@
           IsEnabled="{TemplateBinding IsBackEnabled}"
           Style="{StaticResource BasePaneButtonStyle}"
           Visibility="{TemplateBinding IsBackButtonVisible,
-                                                 Converter={StaticResource BackButtonVisibilityToVisibilityConverter}}"
+                                       Converter={StaticResource BackButtonVisibilityToVisibilityConverter}}"
         >
           <controls:Button.Icon>
             <controls:SymbolIcon Symbol="ArrowLeft48" />
@@ -101,7 +101,7 @@
       </Grid>
     </Grid>
   </ControlTemplate>
-  <ControlTemplate
+  <ControlTemplate 
     x:Key="TopCompactNavigationViewItemTemplate"
     TargetType="{x:Type controls:NavigationViewItem}"
   >
@@ -110,7 +110,7 @@
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
-      <Border x:Name="MainBorder">
+      <Border x:Name="MainBorder" Background="Transparent">
         <Grid>
           <Grid Margin="8,8,8,8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>
@@ -126,7 +126,7 @@
               VerticalAlignment="Center"
               Content="{TemplateBinding Icon}"
               TextElement.FontSize="16"
-              TextElement.Foreground="{DynamicResource NavigationViewItemForeground}"
+              TextElement.Foreground="{DynamicResource NavigationViewItemForeground}" 
             />
             <ContentPresenter
               x:Name="ElementContentPresenter"
@@ -281,7 +281,7 @@
                           />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                          <Setter
+                          <Setter 
                             TargetName="MainBorder"
                             Property="Background"
                             Value="{DynamicResource NavigationViewItemBackgroundPressed}"
@@ -314,10 +314,10 @@
                 Duration="0:0:0.167"
               />
               <!--<DoubleAnimation
-                                Storyboard.TargetName="ChevronIcon"
-                                Storyboard.TargetProperty="(Control.RenderTransform).(RotateTransform.Angle)"
-                                To="-180"
-                                Duration="00:00:00.167" />-->
+                Storyboard.TargetName="ChevronIcon"
+                Storyboard.TargetProperty="(Control.RenderTransform).(RotateTransform.Angle)"
+                To="-180"
+                Duration="00:00:00.167" />-->
             </Storyboard>
           </BeginStoryboard>
         </Trigger.EnterActions>
@@ -332,10 +332,10 @@
                 Duration="0:0:0.167"
               />
               <!--<DoubleAnimation
-                                Storyboard.TargetName="ChevronIcon"
-                                Storyboard.TargetProperty="(Control.RenderTransform).(RotateTransform.Angle)"
-                                To="0"
-                                Duration="00:00:00.167" />-->
+                Storyboard.TargetName="ChevronIcon"
+                Storyboard.TargetProperty="(Control.RenderTransform).(RotateTransform.Angle)"
+                To="0"
+                Duration="00:00:00.167" />-->
             </Storyboard>
           </BeginStoryboard>
         </Trigger.ExitActions>
