@@ -158,7 +158,7 @@ public partial class PasswordBox : TextBox
         UpdateWithLock(() =>
             SetCurrentValue(
                 TextProperty,
-                IsPasswordRevealed ? Password : new string(PasswordChar, Password.Length)
+                IsPasswordRevealed ? Password : new string(PasswordChar, Password?.Length ?? 0)
             )
         );
     }
