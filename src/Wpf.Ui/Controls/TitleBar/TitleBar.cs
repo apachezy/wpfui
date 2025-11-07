@@ -713,9 +713,6 @@ public partial class TitleBar : System.Windows.Controls.Control, IThemeControl
             return e.ReturnValue ?? IntPtr.Zero;
         }
 
-            htResult = GetWindowBorderHitTestResult(hwnd, lParam);
-        }
-
         switch (message)
         {
             case User32.WM.NCHITTEST when CloseWindowByDoubleClickOnIcon && _icon.IsMouseOverElement(lParam):
