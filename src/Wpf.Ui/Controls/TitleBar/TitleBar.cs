@@ -37,6 +37,8 @@ public partial class TitleBar : System.Windows.Controls.Control, IThemeControl
 
     private DependencyObject? _parentWindow;
 
+    public event EventHandler<HwndProcEventArgs>? WndProcInvoked;
+
     /// <summary>Identifies the <see cref="ApplicationTheme"/> dependency property.</summary>
     public static readonly DependencyProperty ApplicationThemeProperty = DependencyProperty.Register(
         nameof(ApplicationTheme),
@@ -691,13 +693,25 @@ public partial class TitleBar : System.Windows.Controls.Control, IThemeControl
                 {
                     isMouseOverHeaderContent =
                         headerLeftUIElement.IsMouseOverElement(lParam)
-                     || (headerRightUiElement?.IsMouseOverElement(lParam) ?? false);
+                        || (headerRightUiElement?.IsMouseOverElement(lParam) ?? false);
                 }
                 else
                 {
                     isMouseOverHeaderContent = headerRightUiElement?.IsMouseOverElement(lParam) ?? false;
                 }
             }
+
+            htResult = GetWindowBorderHitTestResult(hwnd, lParam);
+        }
+
+        var e = new HwndProcEventArgs(hwnd, msg, wParam, lParam, isMouseOverHeaderContent);
+        WndProcInvoked?.Invoke(this, e);
+
+        if (e.ReturnValue != null)
+        {
+            handled = e.Handled;
+            return e.ReturnValue ?? IntPtr.Zero;
+        }
 
             htResult = GetWindowBorderHitTestResult(hwnd, lParam);
         }
